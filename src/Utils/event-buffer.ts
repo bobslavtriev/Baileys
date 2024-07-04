@@ -59,7 +59,7 @@ type BaileysBufferableEventEmitter = BaileysEventEmitter & {
 /**
  * The event buffer logically consolidates different events into a single event
  * making the data processing more efficient.
- * @param ev the baileys event emitter
+ * @param logger
  */
 export const makeEventBuffer = (logger: Logger): BaileysBufferableEventEmitter => {
 	const ev = new EventEmitter()
@@ -150,8 +150,7 @@ export const makeEventBuffer = (logger: Logger): BaileysBufferableEventEmitter =
 			return async(...args) => {
 				buffer()
 				try {
-					const result = await work(...args)
-					return result
+					return await work(...args)
 				} finally {
 					flush()
 				}
