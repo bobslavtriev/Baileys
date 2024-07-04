@@ -14,8 +14,7 @@ export const makeMutex = () => {
 
 				try {
 					// execute the current task
-					const result = await code()
-					return result
+					return await code()
 				} finally {
 					clearTimeout(taskTimeout)
 				}
