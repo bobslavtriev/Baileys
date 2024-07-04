@@ -22,18 +22,10 @@ const getTmpFilesDirectory = () => tmpdir()
 const getImageProcessingLibrary = async() => {
 	const [_jimp, sharp] = await Promise.all([
 		(async() => {
-			const jimp = await (
-				import('jimp')
-					.catch(() => { })
-			)
-			return jimp
+			return await (import('jimp').catch(() => null))
 		})(),
 		(async() => {
-			const sharp = await (
-				import('sharp')
-					.catch(() => { })
-			)
-			return sharp
+			return await (import('sharp').catch(() => null))
 		})()
 	])
 
@@ -137,7 +129,7 @@ export const encodeBase64EncodedStringForUpload = (b64: string) => (
 		b64
 			.replace(/\+/g, '-')
 			.replace(/\//g, '_')
-			.replace(/\=+$/, '')
+			.replace(/=+$/, '')
 	)
 )
 
@@ -241,11 +233,9 @@ export async function getAudioWaveform(buffer: Buffer | string | Readable, logge
 		const normalizedData = filteredData.map((n) => n * multiplier)
 
 		// Generate waveform like WhatsApp
-		const waveform = new Uint8Array(
+		return new Uint8Array(
 			normalizedData.map((n) => Math.floor(100 * n))
 		)
-
-		return waveform
 	} catch(e) {
 		logger?.debug('Failed to generate waveform: ' + e)
 	}
