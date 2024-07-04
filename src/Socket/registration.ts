@@ -2,7 +2,7 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { MOBILE_REGISTRATION_ENDPOINT, MOBILE_TOKEN, MOBILE_USERAGENT, REGISTRATION_PUBLIC_KEY } from '../Defaults'
 import { KeyPair, SignedKeyPair, SocketConfig } from '../Types'
-import { aesEncryptGCM, Curve, md5 } from '../Utils/crypto'
+import { aesEncryptGCM, Curve, md5 } from '../Utils'
 import { jidEncode } from '../WABinary'
 import { makeBusinessSocket } from './business'
 
@@ -96,7 +96,7 @@ export interface RegistrationOptions {
 export type RegistrationParams = RegistrationData & RegistrationOptions
 
 function convertBufferToUrlHex(buffer: Buffer) {
-	var id = ''
+	let id = ''
 
 	buffer.forEach((x) => {
 		// encode random identity_id buffer as percentage url encoding
@@ -114,7 +114,7 @@ export function registrationParams(params: RegistrationParams) {
 	e_skey_id.writeInt16BE(params.signedPreKey.keyId)
 
 	params.phoneNumberCountryCode = params.phoneNumberCountryCode.replace('+', '').trim()
-	params.phoneNumberNationalNumber = params.phoneNumberNationalNumber.replace(/[/-\s)(]/g, '').trim()
+	params.phoneNumberNationalNumber = params.phoneNumberNationalNumber.replace(/[/\-\s)(]/g, '').trim()
 
 	return {
 		cc: params.phoneNumberCountryCode,
@@ -218,7 +218,7 @@ export async function mobileRegisterFetch(path: string, opts: AxiosRequestConfig
 
 	const response = await axios(url, opts)
 
-	var json = response.data
+	const json = response.data
 
 	if(response.status > 300 || json.reason) {
 		throw json
