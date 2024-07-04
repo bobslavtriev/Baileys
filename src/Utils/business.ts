@@ -222,7 +222,7 @@ export const uploadingNecessaryImages = async(
 	waUploadToServer: WAMediaUploadFunction,
 	timeoutMs = 30_000
 ) => {
-	const results = await Promise.all(
+	return await Promise.all(
 		images.map<Promise<{ url: string }>>(
 			async img => {
 
@@ -255,7 +255,6 @@ export const uploadingNecessaryImages = async(
 			}
 		)
 	)
-	return results
 }
 
 const parseImageUrls = (mediaNode: BinaryNode) => {
