@@ -49,7 +49,7 @@ const makeCacheManagerAuthState = async(store: Storage, sessionKey: string) => {
 		try {
 			const result = await databaseConn.store.keys(`${sessionKey}*`)
 			await Promise.all(
-				result.map(async(key) => await databaseConn.del(key))
+				result.map(async(key: string) => await databaseConn.del(key))
 			)
 		} catch(err) {
 		}
