@@ -82,7 +82,7 @@ export const unpadRandomMax16 = (e: Uint8Array | Buffer) => {
 		throw new Error('unpadPkcs7 given empty bytes')
 	}
 
-	var r = t[t.length - 1]
+	const r = t[t.length - 1]
 	if(r > t.length) {
 		throw new Error(`unpad given ${t.length} bytes, but pad is ${r}`)
 	}
@@ -343,7 +343,7 @@ const CODE_MAP: { [_: string]: DisconnectReason } = {
 
 /**
  * Stream errors generally provide a reason, map that to a baileys DisconnectReason
- * @param reason the string reason given, eg. "conflict"
+ * @param node
  */
 export const getErrorCodeFromStreamError = (node: BinaryNode) => {
 	const [reasonNode] = getAllBinaryNodeChildren(node)
