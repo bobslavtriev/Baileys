@@ -42,7 +42,7 @@ export default (config: BaileysInMemoryStoreConfig) => {
 	const logger: Logger = config.logger || DEFAULT_CONNECTION_CONFIG.logger.child({ stream: 'in-mem-store' })
 	const KeyedDB = require('@adiwajshing/keyed-db').default
 
-	const chats = new KeyedDB(chatKey, c => c.id) as KeyedDB<Chat, string>
+	const chats = new KeyedDB(chatKey, (c: Contact) => c.id) as KeyedDB<Chat, string>
 	const messages: { [_: string]: ReturnType<typeof makeMessagesDictionary> } = {}
 	const contacts: { [_: string]: Contact } = {}
 	const groupMetadata: { [_: string]: GroupMetadata } = {}
@@ -76,6 +76,16 @@ export default (config: BaileysInMemoryStoreConfig) => {
 		for(const label of newLabels) {
 			labels.upsertById(label.id, label)
 		}
+	}
+
+	const getValidContacts = () => {
+		for(const contact of Object.keys(contacts)) {
+			if(contact.indexOf('@') < 0) {
+				delete contacts[contact]
+			}
+		}
+
+		return Object.keys(contacts)
 	}
 
 	/**
@@ -134,10 +144,11 @@ export default (config: BaileysInMemoryStoreConfig) => {
 				if(contacts[update.id!]) {
 					contact = contacts[update.id!]
 				} else {
-					const contactHashes = await Promise.all(Object.keys(contacts).map(async contactId => {
+					const validContacts = getValidContacts()
+					const contactHashes = validContacts.map((contactId) => {
 						const { user } = jidDecode(contactId)!
-						return [contactId, (await md5(Buffer.from(user + 'WA_ADD_NOTIF', 'utf8'))).toString('base64').slice(0, 3)]
-					}))
+						return [contactId, (md5(Buffer.from(user + 'WA_ADD_NOTIF', 'utf8'))).toString('base64').slice(0, 3)]
+					})
 					contact = contacts[contactHashes.find(([, b]) => b === update.id)?.[0] || ''] // find contact by attrs.hash, when user is not saved as a contact
 				}
 
@@ -147,11 +158,11 @@ export default (config: BaileysInMemoryStoreConfig) => {
 					} else if(update.imgUrl === 'removed') {
 						delete contact.imgUrl
 					}
-				} else {
-					return logger.debug({ update }, 'got update for non-existant contact')
-				}
 
-				Object.assign(contacts[contact.id], contact)
+					Object.assign(contacts[contact.id], contact)
+				} else {
+					logger.debug({ update }, 'got update for non-existant contact')
+				}
 			}
 		})
 		ev.on('chats.upsert', newChats => {
