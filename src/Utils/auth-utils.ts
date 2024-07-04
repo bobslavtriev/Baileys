@@ -79,6 +79,7 @@ export function makeCacheableSignalKeyStore(
  * this allows batch read & write operations & improves the performance of the lib
  * @param state the key store to apply this capability to
  * @param logger logger to log events
+ * @param TransactionCapabilityOptions
  * @returns SignalKeyStore with transaction capability
  */
 export const addTransactionCapability = (
