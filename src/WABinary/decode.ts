@@ -222,9 +222,7 @@ export const decodeDecompressedBinaryNode = (
 	const attributesLength = (listSize - 1) >> 1
 	for(let i = 0; i < attributesLength; i++) {
 		const key = readString(readByte())
-		const value = readString(readByte())
-
-		attrs[key] = value
+		attrs[key] = readString(readByte())
 	}
 
 	if(listSize % 2 === 0) {
