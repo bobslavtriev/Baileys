@@ -1,6 +1,5 @@
 import { KEY_BUNDLE_TYPE } from '../Defaults'
-import { SignalRepository } from '../Types'
-import { AuthenticationCreds, AuthenticationState, KeyPair, SignalIdentity, SignalKeyStore, SignedKeyPair } from '../Types/Auth'
+import { AuthenticationCreds, AuthenticationState, KeyPair, SignalIdentity, SignalKeyStore, SignalRepository, SignedKeyPair } from '../Types'
 import { assertNodeErrorFree, BinaryNode, getBinaryNodeChild, getBinaryNodeChildBuffer, getBinaryNodeChildren, getBinaryNodeChildUInt, jidDecode, JidWithDevice, S_WHATSAPP_NET } from '../WABinary'
 import { Curve, generateSignalPubKey } from './crypto'
 import { encodeBigEndian } from './generics'
@@ -136,6 +135,7 @@ export const extractDeviceJids = (result: BinaryNode, myJid: string, excludeZero
 
 /**
  * get the next N keys for upload or processing
+ * @param {creds, keys} AuthenticationState
  * @param count number of pre-keys to get or generate
  */
 export const getNextPreKeys = async({ creds, keys }: AuthenticationState, count: number) => {
