@@ -58,13 +58,12 @@ export const assertNodeErrorFree = (node: BinaryNode) => {
 
 export const reduceBinaryNodeToDictionary = (node: BinaryNode, tag: string) => {
 	const nodes = getBinaryNodeChildren(node, tag)
-	const dict = nodes.reduce(
+	return nodes.reduce(
 		(dict, { attrs }) => {
 			dict[attrs.name || attrs.config_code] = attrs.value || attrs.config_value
 			return dict
 		}, { } as { [_: string]: string }
 	)
-	return dict
 }
 
 export const getBinaryNodeMessages = ({ content }: BinaryNode) => {
