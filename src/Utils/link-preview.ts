@@ -12,8 +12,7 @@ const getCompressedJpegThumbnail = async(
 	{ thumbnailWidth, fetchOpts }: URLGenerationOptions
 ) => {
 	const stream = await getHttpStream(url, fetchOpts)
-	const result = await extractImageThumb(stream, thumbnailWidth)
-	return result
+	return await extractImageThumb(stream, thumbnailWidth)
 }
 
 export type URLGenerationOptions = {
@@ -33,6 +32,7 @@ export type URLGenerationOptions = {
  * Given a piece of text, checks for any URL present, generates link preview for the same and returns it
  * Return undefined if the fetch failed or no URL was found
  * @param text first matched URL in text
+ * @param opts { thumbnailWidth, fetchOpts, blacklistLinkPreview }
  * @returns the URL info required to generate link preview
  */
 export const getUrlInfo = async(
@@ -56,7 +56,7 @@ export const getUrlInfo = async(
 
 		const { getLinkPreview } = await import('link-preview-js')
 		let previewLink = text
-		if(!text.startsWith('https://') && !text.startsWith('http://')) {
+		if(!text.match(/^http(s|):\/\//)) {
 			previewLink = 'https://' + previewLink
 		}
 
@@ -70,16 +70,9 @@ export const getUrlInfo = async(
 					return false
 				}
 
-				if(
-					forwardedURLObj.hostname === urlObj.hostname
+				return forwardedURLObj.hostname === urlObj.hostname
 					|| forwardedURLObj.hostname === 'www.' + urlObj.hostname
 					|| 'www.' + forwardedURLObj.hostname === urlObj.hostname
-				) {
-					retries + 1
-					return true
-				} else {
-					return false
-				}
 			},
 			headers: opts.fetchOpts as {}
 		})
