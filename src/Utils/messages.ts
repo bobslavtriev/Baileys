@@ -75,16 +75,15 @@ export const generateLinkPreviewIfRequired = async(text: string, getUrlInfo: Mes
 	const url = extractUrlFromText(text)
 	if(!!getUrlInfo && url) {
 		try {
-			const urlInfo = await getUrlInfo(url)
-			return urlInfo
+			return await getUrlInfo(url)
 		} catch(error) { // ignore if fails
 			logger?.warn({ trace: error.stack }, 'url generation failed')
 		}
 	}
 }
 
-const assertColor = async(color) => {
-	let assertedColor
+const assertColor = async(color: any) => {
+	let assertedColor: number
 	if(typeof color === 'number') {
 		assertedColor = color > 0 ? color : 0xffffffff + Number(color) + 1
 	} else {
@@ -94,8 +93,9 @@ const assertColor = async(color) => {
 		}
 
 		assertedColor = parseInt(hex, 16)
-		return assertedColor
 	}
+
+	return assertedColor
 }
 
 export const prepareWAMessageMedia = async(
@@ -285,7 +285,7 @@ export const prepareDisappearingMessageSettingContent = (ephemeralExpiration?: n
 /**
  * Generate forwarded message content like WA does
  * @param message the message to forward
- * @param options.forceForward will show the message as forwarded even if it is from you
+ * @param forceForward will show the message as forwarded even if it is from you
  */
 export const generateForwardMessageContent = (
 	message: WAMessage,
@@ -891,8 +891,7 @@ export const downloadMediaMessage = async<Type extends 'buffer' | 'stream'>(
 						ctx.logger.info({ key: message.key }, 'sending reupload media request...')
 						// request reupload
 						message = await ctx.reuploadRequest(message)
-						const result = await downloadMsg()
-						return result
+						return await downloadMsg()
 					}
 				}
 			}
