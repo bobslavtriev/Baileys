@@ -516,7 +516,7 @@ export const makeSocket = (config: SocketConfig) => {
 						{
 							tag: 'link_code_pairing_wrapped_companion_ephemeral_pub',
 							attrs: {},
-							content: await generatePairingKey()
+							content: generatePairingKey()
 						},
 						{
 							tag: 'companion_server_auth_key_pub',
@@ -545,10 +545,10 @@ export const makeSocket = (config: SocketConfig) => {
 		return authState.creds.pairingCode
 	}
 
-	async function generatePairingKey() {
+	function generatePairingKey() {
 		const salt = randomBytes(32)
 		const randomIv = randomBytes(16)
-		const key = await derivePairingCodeKey(authState.creds.pairingCode!, salt)
+		const key = derivePairingCodeKey(authState.creds.pairingCode!, salt)
 		const ciphered = aesEncryptCTR(authState.creds.pairingEphemeralKeyPair.public, key, randomIv)
 		return Buffer.concat([salt, randomIv, ciphered])
 	}
