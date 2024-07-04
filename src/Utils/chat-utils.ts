@@ -270,13 +270,12 @@ export const decodeSyncdPatch = async(
 		}
 	}
 
-	const result = await decodeSyncdMutations(msg.mutations!, initialState, getAppStateSyncKey, onMutation, validateMacs)
-	return result
+	return await decodeSyncdMutations(msg.mutations!, initialState, getAppStateSyncKey, onMutation, validateMacs)
 }
 
 export const extractSyncdPatches = async(
 	result: BinaryNode,
-	options: AxiosRequestConfig<any>
+	options: AxiosRequestConfig
 ) => {
 	const syncNode = getBinaryNodeChild(result, 'sync')
 	const collectionNodes = getBinaryNodeChildren(syncNode, 'collection')
@@ -334,7 +333,7 @@ export const extractSyncdPatches = async(
 
 export const downloadExternalBlob = async(
 	blob: proto.IExternalBlobReference,
-	options: AxiosRequestConfig<any>
+	options: AxiosRequestConfig
 ) => {
 	const stream = await downloadContentFromMessage(blob, 'md-app-state', { options })
 	const bufferArray: Buffer[] = []
@@ -347,11 +346,10 @@ export const downloadExternalBlob = async(
 
 export const downloadExternalPatch = async(
 	blob: proto.IExternalBlobReference,
-	options: AxiosRequestConfig<any>
+	options: AxiosRequestConfig
 ) => {
 	const buffer = await downloadExternalBlob(blob, options)
-	const syncData = proto.SyncdMutations.decode(buffer)
-	return syncData
+	return proto.SyncdMutations.decode(buffer)
 }
 
 export const decodeSyncdSnapshot = async(
@@ -408,7 +406,7 @@ export const decodePatches = async(
 	syncds: proto.ISyncdPatch[],
 	initial: LTHashState,
 	getAppStateSyncKey: FetchAppStateSyncKey,
-	options: AxiosRequestConfig<any>,
+	options: AxiosRequestConfig,
 	minimumVersionNumber?: number,
 	logger?: Logger,
 	validateMacs = true
@@ -531,7 +529,7 @@ export const chatModificationToAppPatch = (
 		patch = {
 			syncAction: {
 				archiveChatAction: {
-					archived: !!mod.archive,
+					archived: mod.archive,
 					messageRange: getMessageRange(mod.lastMessages)
 				}
 			},
@@ -575,7 +573,7 @@ export const chatModificationToAppPatch = (
 		patch = {
 			syncAction: {
 				pinAction: {
-					pinned: !!mod.pin
+					pinned: mod.pin
 				}
 			},
 			index: ['pin_v1', jid],
@@ -588,7 +586,7 @@ export const chatModificationToAppPatch = (
 		patch = {
 			syncAction: {
 				starAction: {
-					starred: !!mod.star.star
+					starred: mod.star.star
 				}
 			},
 			index: ['star', jid, key.id, key.fromMe ? '1' : '0', '0'],
